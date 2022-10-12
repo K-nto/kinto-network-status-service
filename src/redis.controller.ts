@@ -1,7 +1,11 @@
-import {KintoNode, KintoNodeSchema} from './kintoNode.entity';
+import {
+  KintoNode,
+  KintoNodeInterface,
+  KintoNodeSchema,
+} from './kintoNode.entity';
 import {Client, Repository} from 'redis-om';
 
-const DEFAULT_REDIS_CLIENT_URL = 'redis://default:redispw@localhost:49154';
+const DEFAULT_REDIS_CLIENT_URL = 'redis://default:redispw@localhost:6379';
 
 export class RedisController {
   private CLIENT_URL: string;
@@ -19,14 +23,21 @@ export class RedisController {
   /**
    * getAssociatedNodes
    */
-  public async getAssociatedNodes(walletAddress: string): Promise<KintoNode[]> {
+  public async getAssociatedNodes(
+    walletAddress: string
+  ): Promise<KintoNodeInterface[]> {
     console.log(
       '[DEBUG] redis controller - getAssociatedNodes:',
       walletAddress
     );
 
     try {
-      return await this.kintoNodesRepository.search().return.all();
+      const kintoNodeModelList: KintoNode[] = await this.kintoNodesRepository
+        .search()
+        .return.all();
+      return kintoNodeModelList.map(
+        (kintoNode: KintoNode) => <KintoNodeInterface>kintoNode.toJSON()
+      );
     } catch (error) {
       console.log('[Error] redis controller - getAssociatedNodes:', error);
       return [];
@@ -39,34 +50,44 @@ export class RedisController {
   public async associateNode(
     walletAddress: string,
     contributedSpace: number
-  ): Promise<string> {
+  ): Promise<KintoNodeInterface> {
     console.log('[DEBUG] redis controller - associateNode:', walletAddress);
-    return await this.kintoNodesRepository.createAndSave({
-      wallet: walletAddress,
-      createdDate: new Date(),
-      latestUpdateDate: new Date(),
-      contributedSpace: contributedSpace,
-    });
+    const kintoNodeModel: KintoNode =
+      await this.kintoNodesRepository.createAndSave({
+        wallet: walletAddress,
+        createdDate: new Date(),
+        latestUpdateDate: new Date(),
+        contributedSpace: contributedSpace,
+      });
+    return <KintoNodeInterface>kintoNodeModel.toJSON();
   }
 
   /**
    * getNodeById
    */
-  public async getNodeById(nodeId: string): Promise<KintoNode> {
+  public async getNodeById(nodeId: string): Promise<KintoNodeInterface> {
     console.log('[DEBUG] redis controller - getNodeById:', nodeId);
-    return await this.kintoNodesRepository.fetch(nodeId);
+    const kintoNodeModel: KintoNode = await this.kintoNodesRepository.fetch(
+      nodeId
+    );
+    return <KintoNodeInterface>kintoNodeModel.toJSON();
   }
 
   /**
    * getNodeByWallet
    */
-  public async getNodesByWallet(walletId: string): Promise<KintoNode[]> {
+  public async getNodesByWallet(
+    walletId: string
+  ): Promise<KintoNodeInterface[]> {
     console.log('[DEBUG] redis controller - getNodeById:', walletId);
-    return await this.kintoNodesRepository
+    const kintoNodeModelList: KintoNode[] = await this.kintoNodesRepository
       .search()
       .where('wallet')
       .eq(walletId)
       .return.all();
+    return kintoNodeModelList.map(
+      (kintoNode: KintoNode) => <KintoNodeInterface>kintoNode.toJSON()
+    );
   }
 
   /**

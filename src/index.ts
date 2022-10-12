@@ -27,12 +27,23 @@ server.listen(port, (error?: any) => {
 import {RedisController} from './redis.controller';
 
 const abc = async () => {
-  const client = new RedisController();
-  let test = await client.getAssociatedNodes('test_node');
-  console.log(test);
-  //await client.associateNode('test_node');
-  test = await client.getAssociatedNodes('test_node');
-  console.log(test);
+  const redisController = new RedisController();
+
+  const walletAdress = 'KRIPEIN_WALLET';
+
+  //const node = await redisController.associateNode(walletAdress, 110);
+  //console.log('Associate node', node);
+
+  const listOfNodes = await redisController.getAssociatedNodes(walletAdress);
+  console.log('getAsscoatedNodes', listOfNodes);
+
+  const getNodeById = await redisController.getNodeById(
+    '01GF4W7DT64F2JCRW20YZC146J'
+  );
+  console.log('getNodeById', getNodeById);
+
+  const getNodesByWallet = await redisController.getNodesByWallet(walletAdress);
+  console.log('getNodesByWallet', getNodesByWallet);
 };
 abc();
 
