@@ -23,7 +23,7 @@ export class RedisController {
   /**
    * getAssociatedNodes
    */
-  public async getAssociatedNodes(
+  public async listAssociatedNodes(
     walletAddress: string
   ): Promise<KintoNodeInterface[]> {
     console.log(
@@ -96,5 +96,15 @@ export class RedisController {
   public async removeNode(nodeId: string): Promise<void> {
     console.log('[DEBUG] redis controller - removeNode:', nodeId);
     await this.kintoNodesRepository.remove(nodeId);
+  }
+
+  /**
+   * updateNode
+   */
+  public async updateNode(nodeId: string): Promise<string> {
+    console.log('[DEBUG] redis controller - updateNode:', nodeId);
+    const node: any = await this.kintoNodesRepository.fetch(nodeId);
+    node.latestUpdateDate = new Date();
+    return await this.kintoNodesRepository.save(node);
   }
 }

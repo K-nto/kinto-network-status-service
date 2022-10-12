@@ -1,31 +1,37 @@
 import express from 'express';
 import * as http from 'http';
 import cors from 'cors';
+import debug from 'debug';
+import {CommonRoutesConfig} from './common/common.routes.config';
+import {NodesRoutes} from './nodes/nodes.routes.config';
 
 const app: express.Application = express();
 const server: http.Server = http.createServer(app);
 const port = process.env.PORT || 3001;
-/*
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
 app.use(express.json());
 app.use(cors());
+
+const routes: Array<CommonRoutesConfig> = [];
+routes.push(new NodesRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${port}`;
 app.get('/', (req: express.Request, res: express.Response) => {
   res.status(200).send('Healthcheck: OK!');
 });
 
-server.listen(port, (error?: any) => {
-  if (error) {
-    return console.error(error);
-  }
+const debugLog: debug.IDebugger = debug('app');
+server.listen(port, () => {
+  routes.forEach((route: CommonRoutesConfig) => {
+    debugLog(`Routes configured for ${route.getName()}`);
+  });
   console.log(runningMessage);
 });
-*/
 
-import {RedisController} from './redis.controller';
-
+/*
 const abc = async () => {
   const redisController = new RedisController();
 
@@ -46,5 +52,5 @@ const abc = async () => {
   console.log('getNodesByWallet', getNodesByWallet);
 };
 abc();
-
+*/
 export default app;
