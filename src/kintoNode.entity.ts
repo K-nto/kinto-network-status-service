@@ -9,6 +9,7 @@ export const KintoNodeSchema = new Schema(KintoNode, {
   contributedSpace: {type: 'number'}, // I assume it's in GB
   availableSpaceForUser: {type: 'number'}, // GB - not the free space in the node. The space that the node gives the user
   confidence: {type: 'number'},
+  status: {type: 'string'}, // connected / disconnected / deleted
 });
 
 export interface KintoNodeInterface {
@@ -19,5 +20,6 @@ export interface KintoNodeInterface {
   contributedSpace: number; // GB
   availableSpaceForUser: number; // GB - not the free space in the node. The space that the node gives the user
   confidence: number;
+  status: string;
   // connection info ? IP ? DNS ? any domain name?
 }
