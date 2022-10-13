@@ -49,15 +49,18 @@ export class RedisController {
    */
   public async associateNode(
     walletAddress: string,
-    contributedSpace: number
+    contributedSpace: number,
+    alias?: string
   ): Promise<KintoNodeInterface> {
     console.log('[DEBUG] redis controller - associateNode:', walletAddress);
     const kintoNodeModel: KintoNode =
       await this.kintoNodesRepository.createAndSave({
         wallet: walletAddress,
+        alias: alias ?? '', // I don't think this is OK
         createdDate: new Date(),
         latestUpdateDate: new Date(),
         contributedSpace: contributedSpace,
+        userAvailableSpace: this.calculateUserAvailableSpace(contributedSpace),
       });
     return <KintoNodeInterface>kintoNodeModel.toJSON();
   }
@@ -106,5 +109,10 @@ export class RedisController {
     const node: any = await this.kintoNodesRepository.fetch(nodeId);
     node.latestUpdateDate = new Date();
     return await this.kintoNodesRepository.save(node);
+  }
+
+  private calculateUserAvailableSpace(storageSpace: number) {
+    // TODO: define other strategies
+    return storageSpace / 4;
   }
 }
