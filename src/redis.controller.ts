@@ -60,7 +60,9 @@ export class RedisController {
         createdDate: new Date(),
         latestUpdateDate: new Date(),
         contributedSpace: contributedSpace,
-        userAvailableSpace: this.calculateUserAvailableSpace(contributedSpace),
+        userAvailableSpace: contributedSpace / 4,
+        status: 'disconnected',
+        confidence: 0,
       });
     return <KintoNodeInterface>kintoNodeModel.toJSON();
   }
@@ -107,12 +109,9 @@ export class RedisController {
   public async updateNode(nodeId: string): Promise<string> {
     console.log('[DEBUG] redis controller - updateNode:', nodeId);
     const node: any = await this.kintoNodesRepository.fetch(nodeId);
+    node.status = 'online';
+    node.confidence = 100;
     node.latestUpdateDate = new Date();
     return await this.kintoNodesRepository.save(node);
-  }
-
-  private calculateUserAvailableSpace(storageSpace: number) {
-    // TODO: define other strategies
-    return storageSpace / 4;
   }
 }

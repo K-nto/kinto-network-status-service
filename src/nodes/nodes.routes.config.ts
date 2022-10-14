@@ -24,7 +24,8 @@ export class NodesRoutes extends CommonRoutesConfig {
         res.status(200).send(nodeList);
       })
       .post(async (req: Request, res: Response) => {
-        console.log('[INFO] Request /users/userId/nodes - GET');
+        console.log('[INFO] Request /users/userId/nodes - POST');
+
         if (!req.body.storage)
           res.status(500).send('Missing storage amount on body').end();
         const createdNode = await this.redisController.associateNode(

@@ -7,7 +7,7 @@ export const KintoNodeSchema = new Schema(KintoNode, {
   createdDate: {type: 'date'},
   latestUpdateDate: {type: 'date'},
   contributedSpace: {type: 'number'}, // I assume it's in GB
-  availableSpaceForUser: {type: 'number'}, // GB - not the free space in the node. The space that the node gives the user
+  userAvailableSpace: {type: 'number'}, // GB - not the free space in the node. The space that the node gives the user
   confidence: {type: 'number'},
   status: {type: 'string'}, // connected / disconnected / deleted
 });
@@ -16,10 +16,10 @@ export interface KintoNodeInterface {
   wallet: string;
   alias?: string;
   createdDate: Date;
-  latestUpdateDate: Date;
+  latestUpdateDate?: Date;
   contributedSpace: number; // GB
-  availableSpaceForUser: number; // GB - not the free space in the node. The space that the node gives the user
-  confidence: number;
-  status: string;
+  userAvailableSpace: number; // GB - not the free space in the node. The space that the node gives the user
+  confidence?: number;
+  status?: string;
   // connection info ? IP ? DNS ? any domain name?
 }
