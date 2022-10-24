@@ -1,6 +1,12 @@
 import {Entity, Schema} from 'redis-om';
-export class KintoNode extends Entity {}
 
+export enum NodeStates {
+  CONNECTED = 'connected',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected',
+}
+
+export class KintoNode extends Entity {}
 export const KintoNodeSchema = new Schema(KintoNode, {
   entityId: {type: 'string'},
   wallet: {type: 'string'},
@@ -22,6 +28,11 @@ export interface KintoNodeInterface {
   contributedSpace: number; // GB
   userAvailableSpace: number; // GB - not the free space in the node. The space that the node gives the user
   confidence?: number;
-  status?: string;
+  status?: NodeStates;
   // connection info ? IP ? DNS ? any domain name?
+}
+export interface KintoNodePostRequest {
+  alias?: string;
+  contributedSpace?: number;
+  status?: NodeStates;
 }

@@ -1,7 +1,9 @@
 import {
   KintoNode,
   KintoNodeInterface,
+  KintoNodePostRequest,
   KintoNodeSchema,
+  NodeStates,
 } from './kintoNode.entity';
 import {Client, Repository} from 'redis-om';
 
@@ -56,7 +58,7 @@ export class RedisController {
         latestUpdateDate: new Date(),
         contributedSpace: contributedSpace,
         userAvailableSpace: contributedSpace / 4,
-        status: 'disconnected',
+        status: NodeStates.CONNECTING,
         confidence: 0,
       });
     return <KintoNodeInterface>kintoNodeModel.toJSON();
@@ -108,10 +110,20 @@ export class RedisController {
     console.log('[DEBUG] redis controller - nodeKeepAlive:', nodeId);
     const entity: KintoNode = await this.kintoNodesRepository.fetch(nodeId);
     const node = <KintoNodeInterface>entity.toJSON();
-    node.status = 'online';
+    node.status = NodeStates.CONNECTED;
     node.latestUpdateDate = new Date();
     if (firstConnection) node.confidence = 100;
     return await this.saveNode(node);
+  }
+
+  public async updateNode(
+    nodeId: string,
+    updatedProperties: KintoNodePostRequest
+  ): Promise<string> {
+    console.log('[DEBUG] redis controller - updateNode:', nodeId);
+    const entity: KintoNode = await this.kintoNodesRepository.fetch(nodeId);
+    const node = <KintoNodeInterface>entity.toJSON();
+    return await this.saveNode({...node, ...updatedProperties});
   }
 
   public async saveNode(node: KintoNodeInterface) {

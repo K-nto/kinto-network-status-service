@@ -1,3 +1,4 @@
+import {NodeStates} from '../kintoNode.entity';
 import {RedisController} from '../redis.controller';
 
 const CONFIDENCE_SCORE_SERVICE = '[CONFIDENCE SCORE SERVICE]';
@@ -30,7 +31,7 @@ export class NodeScoreService {
       const differenceInMs = node.latestUpdateDate
         ? now.getTime() - node.latestUpdateDate?.getTime()
         : now.getTime() - node.createdDate.getTime();
-      if (node.status === 'disconnected') {
+      if (node.status === NodeStates.DISCONNECTED) {
         if (differenceInMs > DAY_IN_MS * 3) {
           // latest update more than 72hs ago, delete the node.
           this.redisController.removeNode(node.entityId);
@@ -46,7 +47,7 @@ export class NodeScoreService {
           skippedNodes++;
           return;
         }
-      } else if (node.status === 'online') {
+      } else if (node.status === NodeStates.CONNECTED) {
         if (differenceInMs <= MIN_IN_MS) {
           // If last update happened less than a minute ago, add 1 confidence
           node.confidence = node.confidence
@@ -59,7 +60,7 @@ export class NodeScoreService {
             : 100;
         } else {
           // automatically disconnect any node that has send no updates for > 1hr
-          node.status = 'disconnected';
+          node.status = NodeStates.DISCONNECTED;
         }
       }
       updatedNodesCount++;

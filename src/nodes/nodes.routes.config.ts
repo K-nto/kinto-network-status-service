@@ -1,6 +1,7 @@
 import {Application, Request, Response, NextFunction} from 'express';
 import {CommonRoutesConfig} from '../common/common.routes.config';
 import {NODES, USERS} from '../common/common.routes.consts';
+import {KintoNodePostRequest} from '../kintoNode.entity';
 import {RedisController} from '../redis.controller';
 
 export class NodesRoutes extends CommonRoutesConfig {
@@ -51,14 +52,19 @@ export class NodesRoutes extends CommonRoutesConfig {
         const node = await this.redisController.removeNode(req.params.nodeId);
         res.status(200).send(node);
       })
+      .post(async (req: Request, res: Response) => {
+        const updatedNode = await this.redisController.updateNode(
+          req.params.nodeId,
+          <KintoNodePostRequest>req.body
+        );
+        res.status(200).send(`Updated node ID: ${updatedNode}`);
+      })
       .patch(async (req: Request, res: Response) => {
         const updatedNode = await this.redisController.nodeKeepAlive(
           req.params.nodeId,
           req.body.setup
         );
-        res
-          .status(200)
-          .send('Updated the following entity: "' + updatedNode + '"');
+        res.status(200).send('Keep alive received for"' + updatedNode + '"');
       });
 
     return this.app;
