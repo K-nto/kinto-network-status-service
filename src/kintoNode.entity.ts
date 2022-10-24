@@ -2,6 +2,7 @@ import {Entity, Schema} from 'redis-om';
 export class KintoNode extends Entity {}
 
 export const KintoNodeSchema = new Schema(KintoNode, {
+  entityId: {type: 'string'},
   wallet: {type: 'string'},
   alias: {type: 'string'}, // DK how to make it optional
   createdDate: {type: 'date'},
@@ -13,6 +14,7 @@ export const KintoNodeSchema = new Schema(KintoNode, {
 });
 
 export interface KintoNodeInterface {
+  entityId: string;
   wallet: string;
   alias?: string;
   createdDate: Date;

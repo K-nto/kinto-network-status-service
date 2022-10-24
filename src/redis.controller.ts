@@ -23,13 +23,8 @@ export class RedisController {
   /**
    * getAssociatedNodes
    */
-  public async listAssociatedNodes(
-    walletAddress: string
-  ): Promise<KintoNodeInterface[]> {
-    console.log(
-      '[DEBUG] redis controller - getAssociatedNodes:',
-      walletAddress
-    );
+  public async allNodes(): Promise<KintoNodeInterface[]> {
+    console.log('[DEBUG] redis controller - allNodes:');
 
     try {
       const kintoNodeModelList: KintoNode[] = await this.kintoNodesRepository
@@ -39,7 +34,7 @@ export class RedisController {
         (kintoNode: KintoNode) => <KintoNodeInterface>kintoNode.toJSON()
       );
     } catch (error) {
-      console.log('[Error] redis controller - getAssociatedNodes:', error);
+      console.log('[Error] redis controller - allNodes:', error);
       return [];
     }
   }
@@ -106,12 +101,22 @@ export class RedisController {
   /**
    * updateNode
    */
-  public async updateNode(nodeId: string): Promise<string> {
-    console.log('[DEBUG] redis controller - updateNode:', nodeId);
-    const node: any = await this.kintoNodesRepository.fetch(nodeId);
+  public async nodeKeepAlive(
+    nodeId: string,
+    firstConnection = false
+  ): Promise<string> {
+    console.log('[DEBUG] redis controller - nodeKeepAlive:', nodeId);
+    const entity: KintoNode = await this.kintoNodesRepository.fetch(nodeId);
+    const node = <KintoNodeInterface>entity.toJSON();
     node.status = 'online';
-    node.confidence = 100;
     node.latestUpdateDate = new Date();
-    return await this.kintoNodesRepository.save(node);
+    if (firstConnection) node.confidence = 100;
+    return await this.saveNode(node);
+  }
+
+  public async saveNode(node: KintoNodeInterface) {
+    return await this.kintoNodesRepository.save(
+      new KintoNode(KintoNodeSchema, node.entityId, {...node})
+    );
   }
 }

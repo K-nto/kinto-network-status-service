@@ -52,12 +52,13 @@ export class NodesRoutes extends CommonRoutesConfig {
         res.status(200).send(node);
       })
       .patch(async (req: Request, res: Response) => {
-        const updatedNode = await this.redisController.updateNode(
-          req.params.nodeId
+        const updatedNode = await this.redisController.nodeKeepAlive(
+          req.params.nodeId,
+          req.body.setup
         );
         res
           .status(200)
-          .send('Updated the following emptity: "' + updatedNode + '"');
+          .send('Updated the following entity: "' + updatedNode + '"');
       });
 
     return this.app;
