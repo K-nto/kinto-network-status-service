@@ -68,6 +68,27 @@ export class NodesRoutes extends CommonRoutesConfig {
         res.status(200).send('Keep alive received for"' + updatedNode + '"');
       });
 
+    this.app
+      .route(`/${USERS}/:userId/${NODES}/networkConfiguration`)
+      .all((req: Request, res: Response, next: NextFunction) => {
+        // Middleware executed on every route. @TODO: Validation @TODO: Authentication @TODO: Hyperledger (some)
+        next();
+      })
+      .get(async (req: Request, res: Response) => {
+        const networkConfiguration = {
+          repo: process.env.IPFS_REPO ?? 'ipfs',
+          config: {
+            Addresses: {
+              Swarm: process.env.IPFS_SWARM,
+              API: process.env.IPFS_API,
+              Gateway: process.env.IPFS_GATEWAY,
+              RPC: process.env.IPFS_RPC,
+            },
+            Bootstrap: [],
+          },
+        };
+        res.status(200).send(node);
+      });
     return this.app;
   }
 }

@@ -80,6 +80,12 @@ To run this project, you will need to add the following environment variables to
 
 `SERVICE_URL` endpoint of your service.
 
+Ipfs network configuration, new nodes will use to provide resources to the network.
+`IPFS_REPO`
+`IPFS_API`
+`IPFS_GATEWAY`
+`IPFS_RPC`
+
 ## :gear: Usage
 
 Clone the project
