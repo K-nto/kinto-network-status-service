@@ -69,7 +69,7 @@ export class NodesRoutes extends CommonRoutesConfig {
       });
 
     this.app
-      .route(`/${USERS}/:userId/${NODES}/networkConfiguration`)
+      .route(`/${USERS}/:userId/networkConfiguration`)
       .all((req: Request, res: Response, next: NextFunction) => {
         // Middleware executed on every route. @TODO: Validation @TODO: Authentication @TODO: Hyperledger (some)
         next();
@@ -87,7 +87,7 @@ export class NodesRoutes extends CommonRoutesConfig {
             Bootstrap: [],
           },
         };
-        res.status(200).send(node);
+        res.status(200).send(networkConfiguration);
       });
     return this.app;
   }
