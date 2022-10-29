@@ -3,6 +3,7 @@ import {CommonRoutesConfig} from '../common/common.routes.config';
 import {NODES, USERS} from '../common/common.routes.consts';
 import {KintoNodePostRequest} from '../kintoNode.entity';
 import {RedisController} from '../redis.controller';
+import logger from 'node-color-log';
 
 export class NodesRoutes extends CommonRoutesConfig {
   private redisController: RedisController;
@@ -25,7 +26,7 @@ export class NodesRoutes extends CommonRoutesConfig {
         res.status(200).send(nodeList);
       })
       .post(async (req: Request, res: Response) => {
-        console.log('[INFO] Request /users/userId/nodes - POST');
+        logger.info('Request /users/userId/nodes - POST');
 
         if (!req.body.storage)
           res.status(500).send('Missing storage amount on body').end();

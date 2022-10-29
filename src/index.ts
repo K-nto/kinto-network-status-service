@@ -14,13 +14,18 @@ const port = process.env.PORT || 3001;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
+//Starts service api
 app.use(express.json());
 app.use(cors());
 
+//Create routes
 const routes: Array<CommonRoutesConfig> = [];
 routes.push(new NodesRoutes(app));
 
-const runningMessage = `Server running at http://localhost:${port}`;
+//Sets default endpoint
+const runningMessage = `Server running at ${
+  process.env.SERVICE_URL ?? 'http://localhost'
+}:${port}`;
 app.get('/', (req: express.Request, res: express.Response) => {
   res.status(200).send('Healthcheck: OK!');
 });
@@ -35,30 +40,9 @@ server.listen(port, () => {
   console.log(runningMessage);
 });
 
+//Every minute checks and calculates node confidence score
 cron.schedule('* * * * *', async () =>
   nodeScoreService.calculateConfidenceScore()
 );
 
-/*
-const abc = async () => {
-  const redisController = new RedisController();
-
-  const walletAdress = 'KRIPEIN_WALLET';
-
-  //const node = await redisController.associateNode(walletAdress, 110);
-  //console.log('Associate node', node);
-
-  const listOfNodes = await redisController.getAssociatedNodes(walletAdress);
-  console.log('getAsscoatedNodes', listOfNodes);
-
-  const getNodeById = await redisController.getNodeById(
-    '01GF4W7DT64F2JCRW20YZC146J'
-  );
-  console.log('getNodeById', getNodeById);
-
-  const getNodesByWallet = await redisController.getNodesByWallet(walletAdress);
-  console.log('getNodesByWallet', getNodesByWallet);
-};
-abc();
-*/
 export default app;

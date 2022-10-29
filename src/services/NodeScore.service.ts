@@ -1,5 +1,6 @@
 import {NodeStates} from '../kintoNode.entity';
 import {RedisController} from '../redis.controller';
+import logger from 'node-color-log';
 
 const CONFIDENCE_SCORE_SERVICE = '[CONFIDENCE SCORE SERVICE]';
 const MIN_IN_MS = 1000 * 60;
@@ -12,13 +13,17 @@ export class NodeScoreService {
     this.redisController = new RedisController();
   }
 
+  /**
+   * @name calculateConfidenceScore
+   * @description calculates the confidence score for each node associated
+   */
   public async calculateConfidenceScore() {
-    console.debug(
+    logger.debug(
       `${CONFIDENCE_SCORE_SERVICE} Start calculating confidence score`
     );
     const allNodes = await this.redisController.allNodes();
     if (allNodes.length === 0) {
-      console.debug(
+      logger.debug(
         `${CONFIDENCE_SCORE_SERVICE} No nodes registered. Ending job.`
       );
       return;
@@ -67,7 +72,7 @@ export class NodeScoreService {
       await this.redisController.saveNode(node);
       return;
     });
-    console.debug(
+    logger.debug(
       `${CONFIDENCE_SCORE_SERVICE} Confidence Scores updated on ${allNodes.length}: Updated: ${updatedNodesCount}; Skipped: ${skippedNodes}; Deleted: ${deletedNodesCount}`
     );
   }
